@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sparkling-leaf-7086.abelrubiogarcia7.workers.dev/sitemap.xml
