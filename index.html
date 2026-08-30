@@ -205,7 +205,11 @@ if(id==="info")return msg(`Páginas: <b>${n}</b><br>Tamaño: ${(fs[0].size/1024)
 }catch(e){console.error(e);msg("No se pudo procesar el archivo. Prueba con otro PDF.")}}
 window.onpopstate=()=>{
   const id=getToolFromRoute();
-  tool(id);
+  if(id){
+    tool(id);
+  }else{
+    home();
+  }
 };
 
 const start=getToolFromRoute();
