@@ -47,8 +47,35 @@ const cats=[
 const all=()=>cats.flatMap(c=>c[3]);
 function home(){
 document.title="UtiliTools — Herramientas gratis online";
-app.innerHTML=`<section class="hero"><h1>Herramientas útiles.<br><span>Gratis y sencillas.</span></h1><p>Calculadoras, PDF y herramientas de texto en un solo lugar.</p><div class="search"><input id="search" placeholder="Buscar una herramienta…"></div></section><main class="wrap" id="content"></main>`;
-renderHome();document.getElementById("search").oninput=()=>renderSearch(document.getElementById("search").value)
+
+  document.getElementById("app").innerHTML=`
+    <section class="hero">
+      <h1>Herramientas útiles.<br><span>Gratis y sencillas.</span></h1>
+      <p>Calculadoras, PDF y herramientas de texto en un solo lugar.</p>
+      <div class="search">
+        <input id="search" placeholder="Buscar una herramienta…">
+      </div>
+    </section>
+
+    <main class="wrap" id="content"></main>
+  `;
+
+  renderHome();
+
+  document.getElementById("search").oninput=()=>{
+    renderSearch(document.getElementById("search").value);
+  };
+}
+
+function renderHome(){
+  document.getElementById("content").innerHTML=
+    cats.map(c=>`
+      <section class="section">
+        <h2>${c[0]} ${c[1]}</h2>
+        <p>${c[2]}</p>
+        <div class="grid">${c[3].map(card).join("")}</div>
+      </section>
+    `).join("");
 }
 function renderHome(){content.innerHTML=cats.map(c=>`<section class="section"><h2>${c[0]} ${c[1]}</h2><p>${c[2]}</p><div class="grid">${c[3].map(card).join("")}</div></section>`).join("")}
 function renderSearch(q){let a=all().filter(t=>(t[2]+" "+t[3]).toLowerCase().includes(q.toLowerCase()));content.innerHTML=`<section class="section"><h2>Resultados</h2><div class="grid">${a.length?a.map(card).join(""):"<p>No hemos encontrado esa herramienta.</p>"}</div></section>`}
@@ -56,7 +83,7 @@ function card(t){return `<article class="card" onclick="openTool('${t[0]}')"><di
 function openTool(id){
   navigateTool(id);
 }
-function common(title,desc,body){app.innerHTML=`<main class="wrap"><div class="page"><a class="back" href="#" onclick="home();return false">← Volver a UtiliTools</a><div class="box"><h1>${title}</h1><p class="hint">${desc}</p><div class="fields">${body}</div><div id="result" aria-live="polite"></div></div><div class="faq"><details><summary>¿Es gratis?</summary><p>Sí, esta herramienta no requiere registro.</p></details><details><summary>¿Mis archivos se suben?</summary><p>Las herramientas PDF de esta versión procesan los archivos directamente en tu navegador siempre que sea posible.</p></details></div></div></main>`}
+function common(title,desc,body){document.getElementById("app").innerHTML=`<main class="wrap"><div class="page"><a class="back" href="#" onclick="home();return false">← Volver a UtiliTools</a><div class="box"><h1>${title}</h1><p class="hint">${desc}</p><div class="fields">${body}</div><div id="result" aria-live="polite"></div></div><div class="faq"><details><summary>¿Es gratis?</summary><p>Sí, esta herramienta no requiere registro.</p></details><details><summary>¿Mis archivos se suben?</summary><p>Las herramientas PDF de esta versión procesan los archivos directamente en tu navegador siempre que sea posible.</p></details></div></div></main>`}
 function file(m=false){return `<input id="files" type="file" accept="application/pdf" ${m?"multiple":""}>`}
 function msg(x){document.getElementById("result").innerHTML=`<div class="result">${x}</div>`}
 function dl(b,n,t="application/pdf"){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([b],{type:t}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
@@ -175,7 +202,6 @@ common(t[2],t[3],b)
 }
 function calc(id){
 let r="";
-if(id==="porcentaje")r=`${(+document.getElementById("a").value||0)*((+document.getElementById("b").value||0)/100)}`;
 if(id==="iva"){let p=+a.value||0,v=+b.value||0;r=document.getElementById("mode").value==="add"?`Base: ${p.toFixed(2)} € · IVA: ${(p*v/100).toFixed(2)} € · Total: ${(p*(1+v/100)).toFixed(2)} €`:`Precio sin IVA: ${(p/(1+v/100)).toFixed(2)} € · IVA incluido: ${p.toFixed(2)} €`}
 if(id==="descuento"){let p=+a.value||0,v=+b.value||0;r=`Ahorro: ${(p*v/100).toFixed(2)} € · Precio final: ${(p*(1-v/100)).toFixed(2)} €`}
 if(id==="regla")r=`X = ${((+document.getElementById("b").value||0)*(+document.getElementById("c").value||0))/(+a.value||1)}`;
