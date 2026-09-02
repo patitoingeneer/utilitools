@@ -208,3 +208,24 @@ if(id==="meta"){s.setTitle(document.getElementById("title").value);s.setAuthor(d
 if(id==="marca"){let f=await s.embedFont(PDFLib.StandardFonts.Helvetica);s.getPages().forEach(p=>p.drawText(document.getElementById("watermark").value,{x:80,y:350,size:40,font:f,color:PDFLib.rgb(.7,.7,.7),opacity:.35,rotate:PDFLib.degrees(45)}));dl(await s.save(),"utilitools-marca.pdf");return msg("Marca de agua añadida.")}
 if(id==="info")return msg(`Páginas: <b>${n}</b><br>Tamaño: ${(fs[0].size/1024).toFixed(1)} KB<br>Título: ${s.getTitle()||"—"}<br>Autor: ${s.getAuthor()||"—"}`);
 }catch(e){console.error(e);msg("No se pudo procesar el archivo. Prueba con otro PDF.")}}
+
+const start = getToolFromRoute();
+
+try {
+  if (start) {
+    tool(start);
+  } else {
+    home();
+  }
+} catch (e) {
+  console.error(e);
+  document.getElementById("app").innerHTML = `
+    <main class="wrap">
+      <div class="box">
+        <h1>UtiliTools</h1>
+        <p>No se pudo cargar esta herramienta. Recarga la página.</p>
+        <a class="back" href="/">← Volver al inicio</a>
+      </div>
+    </main>
+  `;
+}
