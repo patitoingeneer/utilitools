@@ -99,7 +99,7 @@ function card(t){return `<article class="card" onclick="openTool('${t[0]}')"><di
 function openTool(id){
   navigateTool(id);
 }
-function common(title,desc,body){document.getElementById("app").innerHTML=`<main class="wrap"><div class="page"><a class="back" href="#" onclick="home();return false">← Volver a UtiliTools</a><div class="box"><h1>${title}</h1><p class="hint">${desc}</p><div class="fields">${body}</div><div id="result" aria-live="polite"></div></div><div class="faq"><details><summary>¿Es gratis?</summary><p>Sí, esta herramienta no requiere registro.</p></details><details><summary>¿Mis archivos se suben?</summary><p>Las herramientas PDF de esta versión procesan los archivos directamente en tu navegador siempre que sea posible.</p></details></div></div></main>`}
+function common(title,desc,body){document.getElementById("app").innerHTML=`<main class="wrap"><div class="page"><a class="back" href="#" onclick="history.pushState({}, '', '/');home();return false">← Volver a UtiliTools</a><div class="box"><h1>${title}</h1><p class="hint">${desc}</p><div class="fields">${body}</div><div id="result" aria-live="polite"></div></div><div class="faq"><details><summary>¿Es gratis?</summary><p>Sí, esta herramienta no requiere registro.</p></details><details><summary>¿Mis archivos se suben?</summary><p>Las herramientas PDF de esta versión procesan los archivos directamente en tu navegador siempre que sea posible.</p></details></div></div></main>`}
 function file(m=false){return `<input id="files" type="file" accept="application/pdf" ${m?"multiple":""}>`}
 function msg(x){document.getElementById("result").innerHTML=`<div class="result">${x}</div>`}
 function dl(b,n,t="application/pdf"){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([b],{type:t}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
@@ -185,7 +185,7 @@ setTimeout(()=>renderSEOContent(id),0);
 if(id==="porcentaje"){
   document.title="Calculadora de porcentaje gratis — UtiliTools";
   document.getElementById("app").innerHTML=`<main class="wrap"><div class="page"><a class="back" href="#" id="backPct">← Volver a UtiliTools</a><div class="box"><h1>Calculadora de porcentaje</h1><p class="hint">Calcula rápidamente qué porcentaje representa una cantidad. Ejemplo: el 20% de 150 es 30.</p><div class="fields"><label>Porcentaje<input id="pct" type="number" inputmode="decimal" placeholder="20"></label><label>Cantidad<input id="amount" type="number" inputmode="decimal" placeholder="150"></label><button class="btn" id="calcPctBtn" type="button">Calcular</button></div><div id="pctResult" aria-live="polite"></div></div></div></main>`;
-  document.getElementById("backPct").addEventListener("click",function(e){e.preventDefault();history.pushState({},'',location.pathname);home()});
+  document.getElementById("backPct").addEventListener("click",function(e){e.preventDefault();history.pushState({}, "", "/");home();});
   document.getElementById("calcPctBtn").addEventListener("click",function(){
     const p=parseFloat(document.getElementById("pct").value);
     const n=parseFloat(document.getElementById("amount").value);
