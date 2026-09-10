@@ -38,8 +38,11 @@ console.log("UTILITOOLS: JavaScript cargado");
 
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+</script>
+
 const cats=[
 ["🧮","Calculadoras","Cálculos rápidos para el día a día",[
 ["porcentaje","%","Calculadora de porcentaje","Calcula porcentajes fácilmente."],["iva","💶","Calculadora de IVA","Añade o quita IVA de un precio."],["descuento","🏷️","Calculadora de descuento","Calcula ahorro y precio final."],["regla","📐","Regla de tres","Resuelve reglas de tres simples."],["edad","🎂","Calculadora de edad","Calcula tu edad exacta."],["fechas","📅","Días entre fechas","Calcula la diferencia entre dos fechas."],["propina","🍽️","Calculadora de propina","Calcula propina y total."],["unidades","↔️","Conversor de unidades","Convierte longitud, peso y temperatura."],["palabras","📝","Contador de palabras","Cuenta palabras y caracteres."],["password","🔐","Generador de contraseñas","Genera contraseñas aleatorias."]]],
@@ -226,7 +229,7 @@ else if(id==="sinmeta")b=`${file()}<button class="btn" onclick="pdfRun('sinmeta'
 else if(id==="meta")b=`${file()}<label>Título<input id="title"></label><label>Autor<input id="author"></label><label>Asunto<input id="subject"></label><button class="btn" onclick="pdfRun('meta')">Guardar metadatos</button>`;
 else if(id==="marca")b=`${file()}<label>Texto<input id="watermark" value="BORRADOR"></label><button class="btn" onclick="pdfRun('marca')">Añadir marca</button>`;
 else if(id==="info")b=`${file()}<button class="btn" onclick="pdfRun('info')">Ver información</button>`;
-else if(id==="pdfimagenes")b=`${file()}<p class="hint">Esta función se incorporará con un conversor PDF visual en la siguiente versión.</p><button class="btn" onclick="msg('Conversión PDF → imágenes preparada para la siguiente actualización.')">Comprobar</button>`;
+else if(id==="pdfimagenes")b=`${file()}<label>Formato<select id="imgFormat"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></label><label>Resolución<select id="imgScale"><option value="1">Normal</option><option value="1.5" selected>Alta</option><option value="2">Muy alta</option></select></label><button class="btn" onclick="pdfRun('pdfimagenes')">Convertir a imágenes</button>`;
 common(t[2],t[3],b)
 }
 function calc(id){
@@ -384,6 +387,83 @@ if(id==="textopdf"){let o=await PDFLib.PDFDocument.create(),font=await o.embedFo
 if(id==="sinmeta"){s.setTitle("");s.setAuthor("");s.setSubject("");s.setKeywords([]);s.setCreator("");s.setProducer("");dl(await s.save(),"utilitools-sin-metadatos.pdf");return msg("Metadatos eliminados.")}
 if(id==="meta"){s.setTitle(document.getElementById("title").value);s.setAuthor(document.getElementById("author").value);s.setSubject(document.getElementById("subject").value);dl(await s.save(),"utilitools-metadatos.pdf");return msg("Metadatos guardados.")}
 if(id==="marca"){let f=await s.embedFont(PDFLib.StandardFonts.Helvetica);s.getPages().forEach(p=>p.drawText(document.getElementById("watermark").value,{x:80,y:350,size:40,font:f,color:PDFLib.rgb(.7,.7,.7),opacity:.35,rotate:PDFLib.degrees(45)}));dl(await s.save(),"utilitools-marca.pdf");return msg("Marca de agua añadida.")}
+if(id==="pdfimagenes"){
+  const format=document.getElementById("imgFormat").value;
+  const scale=parseFloat(document.getElementById("imgScale").value)||1.5;
+
+  const data=await fs[0].arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data}).promise;
+  const total=pdf.numPages;
+
+  if(total===1){
+    msg("Convirtiendo página 1 de 1…");
+
+    const page=await pdf.getPage(1);
+    const viewport=page.getViewport({scale});
+    const canvas=document.createElement("canvas");
+    const ctx=canvas.getContext("2d");
+
+    canvas.width=Math.ceil(viewport.width);
+    canvas.height=Math.ceil(viewport.height);
+
+    await page.render({canvasContext:ctx,viewport}).promise;
+
+    const blob=await new Promise(resolve=>{
+      canvas.toBlob(resolve,format,0.92);
+    });
+
+    const ext=format==="image/png"?"png":"jpg";
+    const url=URL.createObjectURL(blob);
+
+    document.getElementById("result").innerHTML=
+      `<div class="result">
+        Página convertida correctamente.
+        <br><br>
+        <a class="btn" href="${url}" download="pagina-1.${ext}">Descargar imagen</a>
+      </div>`;
+
+    return;
+  }
+
+  const zip=new JSZip();
+
+  for(let i=1;i<=total;i++){
+    msg(`Convirtiendo página ${i} de ${total}…`);
+
+    const page=await pdf.getPage(i);
+    const viewport=page.getViewport({scale});
+    const canvas=document.createElement("canvas");
+    const ctx=canvas.getContext("2d");
+
+    canvas.width=Math.ceil(viewport.width);
+    canvas.height=Math.ceil(viewport.height);
+
+    await page.render({canvasContext:ctx,viewport}).promise;
+
+    const blob=await new Promise(resolve=>{
+      canvas.toBlob(resolve,format,0.92);
+    });
+
+    const bytes=new Uint8Array(await blob.arrayBuffer());
+    const ext=format==="image/png"?"png":"jpg";
+
+    zip.file(`pagina-${i}.${ext}`,bytes);
+  }
+
+  msg("Creando ZIP…");
+
+  const zipBlob=await zip.generateAsync({type:"blob"});
+  const url=URL.createObjectURL(zipBlob);
+
+  document.getElementById("result").innerHTML=
+    `<div class="result">
+      ${total} páginas convertidas correctamente y reunidas en un ZIP.
+      <br><br>
+      <a class="btn" href="${url}" download="utilitools-pdf-imagenes.zip">Descargar ZIP</a>
+    </div>`;
+
+  return;
+}
 if(id==="info")return msg(`Páginas: <b>${n}</b><br>Tamaño: ${(fs[0].size/1024).toFixed(1)} KB<br>Título: ${s.getTitle()||"—"}<br>Autor: ${s.getAuthor()||"—"}`);
 }catch(e){console.error(e);msg("No se pudo procesar el archivo. Prueba con otro PDF.")}}
 
