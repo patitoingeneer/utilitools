@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://sparkling-leaf-7086.abelrubiogarcia7.workers.dev/sitemap.xml
+Sitemap: https://sparkling-leaf-7086.utilitools.workers.dev/sitemap.xml
