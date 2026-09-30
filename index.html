@@ -501,8 +501,38 @@ if (legal === "cookies") {
       </div>
     </main>
   `;
-} else {
+} else if (legal === "privacidad") {
+  document.title = "Política de privacidad — UtiliTools";
+  document.getElementById("app").innerHTML = `
+    <main class="wrap">
+      <div class="box">
+        <h1>Política de privacidad</h1>
 
+        <p>En UtiliTools nos comprometemos a respetar la privacidad de los usuarios y a utilizar la información únicamente para prestar y mejorar el servicio.</p>
+
+        <h2>Datos que recopilamos</h2>
+        <p>UtiliTools no solicita registro ni requiere que el usuario proporcione datos personales para utilizar sus herramientas.</p>
+
+        <h2>Uso de las herramientas</h2>
+        <p>Las herramientas disponibles en UtiliTools están diseñadas para funcionar de forma sencilla y, cuando es técnicamente posible, procesan la información directamente en el navegador del usuario.</p>
+
+        <h2>Servicios de terceros</h2>
+        <p>UtiliTools utiliza determinados servicios externos para cargar librerías y recursos necesarios para el funcionamiento de algunas herramientas. Estos servicios pueden recibir información técnica, como la dirección IP, conforme a sus propias políticas de privacidad.</p>
+
+        <h2>Conservación de datos</h2>
+        <p>UtiliTools no crea cuentas de usuario ni mantiene perfiles personales de los usuarios.</p>
+
+        <h2>Derechos de los usuarios</h2>
+        <p>Los usuarios pueden ejercer los derechos que les correspondan conforme a la legislación aplicable en materia de protección de datos.</p>
+
+        <h2>Contacto</h2>
+        <p>Para cualquier consulta relacionada con la privacidad, puede utilizarse el medio de contacto disponible en UtiliTools.</p>
+
+        <p><a class="back" href="/">← Volver a UtiliTools</a></p>
+      </div>
+    </main>
+  `;
+} else {
 const start = getToolFromRoute();
 
 try {
