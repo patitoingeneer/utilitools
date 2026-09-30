@@ -474,6 +474,35 @@ if(id==="pdfimagenes"){
 if(id==="info")return msg(`Páginas: <b>${n}</b><br>Tamaño: ${(fs[0].size/1024).toFixed(1)} KB<br>Título: ${s.getTitle()||"—"}<br>Autor: ${s.getAuthor()||"—"}`);
 }catch(e){console.error(e);msg("No se pudo procesar el archivo. Prueba con otro PDF.")}}
 
+const legal = new URLSearchParams(location.search).get("legal");
+
+if (legal === "cookies") {
+  document.title = "Política de cookies — UtiliTools";
+  document.getElementById("app").innerHTML = `
+    <main class="wrap">
+      <div class="box">
+        <h1>Política de cookies</h1>
+
+        <p>UtiliTools utiliza únicamente las cookies y tecnologías necesarias para el funcionamiento del sitio web.</p>
+
+        <h2>¿Qué son las cookies?</h2>
+        <p>Las cookies son pequeños archivos que se almacenan en el dispositivo del usuario y permiten que una página web funcione correctamente.</p>
+
+        <h2>Cookies utilizadas por UtiliTools</h2>
+        <p>Actualmente, UtiliTools no utiliza cookies propias para identificar personalmente a los usuarios.</p>
+
+        <h2>Servicios de terceros</h2>
+        <p>Algunas herramientas pueden utilizar servicios externos necesarios para procesar determinados archivos o funciones. Estos servicios pueden establecer sus propias tecnologías de almacenamiento según sus políticas.</p>
+
+        <h2>Contacto</h2>
+        <p>Si tienes alguna duda sobre esta política de cookies, puedes utilizar el medio de contacto disponible en UtiliTools.</p>
+
+        <p><a class="back" href="/">← Volver a UtiliTools</a></p>
+      </div>
+    </main>
+  `;
+} else {
+
 const start = getToolFromRoute();
 
 try {
@@ -493,5 +522,6 @@ try {
       </div>
     </main>
   `;
+}
 }
 </script>
